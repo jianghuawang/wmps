@@ -7,8 +7,6 @@
 
 WMPS is a desktop app for working with Word documents, spreadsheets, Markdown, and PDFs in one place. Open a folder, browse your files in the sidebar, and switch between documents with tabs.
 
-Built with **Electron and React**, using TypeScript and Vite.
-
 No account. No uploads. Your files stay on your computer.
 
 ![WMPS showing a launch brief with a comment linked to its highlighted sentence](docs/images/word-comments.png)
