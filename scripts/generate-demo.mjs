@@ -1,0 +1,18 @@
+import { mkdir, writeFile, copyFile } from "node:fs/promises";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType } from "docx";
+import * as XLSX from "xlsx";
+import { fileURLToPath } from "node:url";
+const root = fileURLToPath(new URL("../examples/Q3 Planning/", import.meta.url));
+await Promise.all(["docs", "data", "legal", "notes"].map(d => mkdir(root+d, { recursive: true })));
+const heading = text => new Paragraph({ text, heading: HeadingLevel.HEADING_1 });
+const p = text => new Paragraph({ children: [new TextRun(text)], spacing: { after: 180 } });
+const word = new Document({ styles: { default: { document: { run: { font: "Georgia", size: 23 }, paragraph: { spacing: { line: 320 } } } } }, sections: [{ children: [new Paragraph({text: "Document Workspace Beta", heading: HeadingLevel.TITLE}), p("Proposal for the Q3 planning review · September 2026"), heading("Summary"), p("We propose a single desktop editor that opens a folder and handles every common document type in it. Word documents and spreadsheets open in familiar page and grid layouts. Markdown opens in a split editor with live preview, and PDFs open in a read-only viewer."), p("The beta is for teams that keep planning material in shared folders and currently switch between four applications to work with it."), heading("Scope"), ...["Folder explorer with tabs for open files", "Word editing: styles, lists, tables, and alignment", "Spreadsheet grid with formulas and number formats", "Markdown split view and PDF viewing"].map(text => new Paragraph({ text, bullet: { level: 0 }})), heading("Timeline"), new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [["Milestone", "Target"],["Internal review", "September 30"],["Beta release", "October 15"],["Feedback review", "October 30"]].map(row=>new TableRow({children:row.map(text=>new TableCell({children:[p(text)]}))})) })] }] });
+await writeFile(root+"docs/Proposal.docx", await Packer.toBuffer(word));
+const book = XLSX.utils.book_new();
+const sheet = XLSX.utils.aoa_to_sheet([["Team", "Q3 Budget", "Q4 Forecast", "Change"],["Design",84000,91000,{t:"n",f:"C2-B2",v:7000}],["Engineering",312000,340000,{t:"n",f:"C3-B3",v:28000}],["Product",70000,74000,{t:"n",f:"C4-B4",v:4000}],["Operations",48000,52000,{t:"n",f:"C5-B5",v:4000}],[],["Total",{t:"n",f:"SUM(B2:B5)",v:514000},{t:"n",f:"SUM(C2:C5)",v:557000},{t:"n",f:"C7-B7",v:43000}]]);
+sheet["!cols"]=[{wpx:190},{wpx:160},{wpx:160},{wpx:140}];
+for(const c of ["B","C","D"])for(const r of [2,3,4,5,7])sheet[c+r].z='"$"#,##0';
+XLSX.utils.book_append_sheet(book,sheet,"Budget");XLSX.utils.book_append_sheet(book,XLSX.utils.aoa_to_sheet([["Team","People"],["Design",6],["Engineering",18],["Product",4]]),"Headcount");
+await writeFile(root+"data/Budget.xlsx",XLSX.write(book,{type:"buffer",bookType:"xlsx",cellStyles:true}));
+await copyFile(new URL("../fixtures/reference.pdf",import.meta.url),root+"legal/Reference.pdf");
+console.log("Demo documents ready:",root);

@@ -1,0 +1,4 @@
+.hex-fallback { height: 100%; display: grid; grid-template-rows: 40px minmax(0, 1fr); background: var(--surface); }
+.hex-fallback header { display: flex; align-items: center; gap: 8px; padding: 0 12px; border-bottom: 1px solid var(--line); color: var(--muted); }
+.hex-fallback header button { margin-left: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-raised); padding: 4px 9px; }
+.hex-fallback pre { min-height: 0; margin: 0; padding: 18px; overflow: auto; user-select: text; white-space: pre-wrap; color: var(--text); font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; }

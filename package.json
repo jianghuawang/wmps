@@ -1,0 +1,129 @@
+{
+  "name": "wmps",
+  "version": "0.1.3",
+  "description": "A local-first workspace for Word, spreadsheets, Markdown, HTML and PDF.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist-electron/main/main.js",
+  "scripts": {
+    "assert:source-clean": "node scripts/assert-source-clean.mjs",
+    "prebuild": "npm run assert:source-clean",
+    "pretypecheck": "npm run assert:source-clean",
+    "dev": "concurrently -k \"npm:dev:renderer\" \"npm:dev:electron\"",
+    "dev:renderer": "vite --host 127.0.0.1",
+    "dev:electron": "npm run build:electron && wait-on tcp:5173 dist-electron/main/main.js && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5173 electron .",
+    "build:electron": "tsc -p tsconfig.electron.json && esbuild src/preload/preload.ts --bundle --platform=node --format=cjs --external:electron --outfile=dist-electron/preload/preload.cjs",
+    "build": "npm run build:electron && vite build",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.electron.json --noEmit && tsc -p tsconfig.preload.json --noEmit",
+    "test": "vitest run",
+    "test:markdown-interactions": "npm run build && node tests/markdown-interactions.e2e.mjs",
+    "test:workspace-windows": "npm run build && node tests/workspace-windows.e2e.mjs",
+    "test:watch": "vitest",
+    "package:mac": "npm run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dmg --arm64",
+    "start": "electron .",
+    "test:desktop": "npm run build && node tests/desktop.e2e.mjs"
+  },
+  "dependencies": {
+    "@codemirror/commands": "6.11.0",
+    "@codemirror/lang-html": "6.4.12",
+    "@codemirror/lang-markdown": "6.5.2",
+    "@codemirror/language": "6.12.4",
+    "@codemirror/search": "6.7.1",
+    "@codemirror/state": "6.7.1",
+    "@codemirror/view": "6.43.9",
+    "@docx-editor.dev/core": "2.7.0",
+    "@docx-editor.dev/react": "2.7.0",
+    "@univerjs/core": "0.25.1",
+    "@univerjs/preset-sheets-core": "0.25.1",
+    "@univerjs/presets": "0.25.1",
+    "@xmldom/xmldom": "^0.8.15",
+    "chokidar": "5.0.0",
+    "docx": "9.7.1",
+    "dompurify": "3.4.14",
+    "fflate": "0.8.3",
+    "highlight.js": "11.12.0",
+    "i18next": "26.4.0",
+    "katex": "0.18.4",
+    "lucide-react": "1.33.0",
+    "markdown-it": "15.0.0",
+    "markdown-it-task-lists": "2.1.1",
+    "markdown-it-texmath": "1.0.0",
+    "pdfjs-dist": "6.2.108",
+    "pino": "10.3.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-i18next": "17.0.12",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "14.2.0",
+    "@types/node": "26.2.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "6.1.0",
+    "concurrently": "10.0.5",
+    "cross-env": "10.1.0",
+    "electron": "43.4.1",
+    "electron-builder": "26.15.3",
+    "esbuild": "0.28.2",
+    "jsdom": "29.1.1",
+    "typescript": "7.0.2",
+    "vite": "8.2.2",
+    "vitest": "4.1.11",
+    "wait-on": "9.1.0"
+  },
+  "overrides": {
+    "nanoid@5.1.11": "5.1.16"
+  },
+  "build": {
+    "appId": "com.wmps.editor",
+    "productName": "WMPS",
+    "directories": {
+      "output": "release"
+    },
+    "asar": true,
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "package.json",
+      "LICENSE",
+      "README.md",
+      "FIDELITY.md",
+      "THIRD_PARTY_NOTICES.md",
+      "licenses/**/*",
+      "examples/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "hardenedRuntime": true,
+      "icon": "build/icon.icns",
+      "extendInfo": {
+        "CFBundleDocumentTypes": [
+          {
+            "CFBundleTypeName": "WMPS Documents",
+            "CFBundleTypeRole": "Editor",
+            "LSItemContentTypes": [
+              "net.daringfireball.markdown",
+              "org.openxmlformats.wordprocessingml.document",
+              "com.microsoft.word.doc",
+              "org.openxmlformats.spreadsheetml.sheet",
+              "com.microsoft.excel.xls",
+              "public.comma-separated-values-text",
+              "public.html",
+              "com.adobe.pdf"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

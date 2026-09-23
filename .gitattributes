@@ -1,0 +1,7 @@
+*.pdf binary
+*.docx binary
+*.xlsx binary
+*.icns binary
+*.woff2 binary
+# Preserve upstream license formatting.
+licenses/* -whitespace

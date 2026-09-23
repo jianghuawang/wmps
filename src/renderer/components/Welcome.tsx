@@ -1,0 +1,7 @@
+import { FilePlus2, FolderOpen, Layers3, FileText, FileSpreadsheet, FileCode2, BookOpen } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
+export function Welcome({ recents, onFolder, onFile, onRecent }: { recents: string[]; onFolder(): void; onFile(): void; onRecent(path: string): void }) {
+  const { t } = useTranslation();
+  return <section className="welcome"><div className="welcome-mark"><Layers3 size={31}/></div><h1>{t('welcomeTitle')}</h1><p>{t('welcomeBody')}</p><div className="welcome-actions"><button className="primary" onClick={onFolder}><FolderOpen size={16}/>{t('openFolder')}</button><button onClick={onFile}><FilePlus2 size={16}/>{t('openFile')}</button></div><div className="format-cards">{[{ icon: FileText, name: 'Word', body: 'A familiar page. Room for your ideas.' }, { icon: FileSpreadsheet, name: 'Spreadsheets', body: 'Numbers, formulas, and the bigger picture.' }, { icon: FileCode2, name: 'Markdown', body: 'Write on the left. See it on the right.' }, { icon: BookOpen, name: 'PDF', body: 'Read, search, and find your place.' }].map(({ icon: Icon, name, body }) => <div key={name} className="format-card"><Icon size={23}/><b>{name}</b><small>{body}</small></div>)}</div>{recents.length > 0 && <div className="recent-list"><h2>{t('recent')}</h2>{recents.map((path) => <button key={path} onClick={() => onRecent(path)}><FolderOpen size={15}/><span><b>{path.split('/').pop()}</b><small>{path}</small></span></button>)}</div>}</section>;
+}
