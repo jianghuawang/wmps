@@ -5,3 +5,8 @@
 *.woff2 binary
 # Preserve upstream license formatting.
 licenses/* -whitespace
+
+# UI references and sample documents are not application source.
+design/** linguist-documentation
+fixtures/** linguist-documentation
+examples/** linguist-documentation
